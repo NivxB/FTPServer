@@ -5,21 +5,25 @@
  */
 package ftpserver;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author Luis Martinez
  */
 public class User {
     private String fullname, username, password, description;
-    private boolean write, read;
+    private ArrayList<String> write_permissions;
+    private ArrayList<String> read_permissions;
     
-    public User(String fullname, String username, String password, String description, boolean write, boolean read) {
+    public User(String fullname, String username, String password, String description) {
+        write_permissions = new ArrayList();
+        read_permissions = new ArrayList();
         this.fullname = fullname;
         this.username = username;
         this.password = password;
         this.description = description;
-        this.write = write;
-        this.read = read;
+        
     }
 
     public String getFullname() {
@@ -53,20 +57,20 @@ public class User {
     public void setDescription(String description) {
         this.description = description;
     }
-
-    public boolean isWrite() {
-        return write;
+    
+    public void addWritePermission(String username) {
+        write_permissions.add(username);
     }
-
-    public void setWrite(boolean write) {
-        this.write = write;
+    
+    public void addReadPermission(String username) {
+        read_permissions.add(username);
     }
-
-    public boolean isRead() {
-        return read;
+    
+    public ArrayList<String> getWritePermissions() {
+        return write_permissions;
     }
-
-    public void setRead(boolean read) {
-        this.read = read;
+    
+    public ArrayList<String> getReadPermissions() {
+        return read_permissions;
     }
 }

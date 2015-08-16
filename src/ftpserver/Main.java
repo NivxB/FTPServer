@@ -9,6 +9,7 @@ import java.awt.Checkbox;
 import java.io.File;
 import java.util.ArrayList;
 import javax.swing.JCheckBox;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -55,8 +56,6 @@ public class Main extends javax.swing.JFrame {
         user_table = new javax.swing.JTable();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
         jScrollPane1 = new javax.swing.JScrollPane();
         fileTable = new javax.swing.JTable();
         jButton1 = new javax.swing.JButton();
@@ -198,19 +197,6 @@ public class Main extends javax.swing.JFrame {
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
-        jScrollPane2.setViewportView(jTable1);
-
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         fileTable.setModel(new javax.swing.table.DefaultTableModel(
@@ -267,10 +253,29 @@ public class Main extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1MouseClicked
 
     private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseClicked
-        // Se crea el nuevo usuario
-        /*
-         * Aqui el codigo de Pagoaga
-         */
+        // Se crea el nuevo usuario        
+        if ((new String(password_field.getPassword())).equals(new String(password2_field.getPassword()))) {
+            users.add(new User(fullname_field.getText(), username_field.getText(), new String(password_field.getPassword()), description_field.getText()));
+            JOptionPane.showMessageDialog(this, "El usuario fue ingresado correctamente.", "Nuevo usuario", JOptionPane.INFORMATION_MESSAGE);
+            CrearUsuario.setVisible(false);
+            fullname_field.setText("");
+            username_field.setText("");
+            description_field.setText("");
+            password_field.setText("");
+            password2_field.setText("");
+
+            DefaultTableModel model = (DefaultTableModel)user_table.getModel();
+            while(model.getRowCount() > 0) 
+                model.removeRow(0);
+
+            user_table.setModel(model);
+            
+            
+        } else {
+            JOptionPane.showMessageDialog(this, "Las contraseñas no coinciden.", "Error", JOptionPane.ERROR_MESSAGE);
+            password_field.setText("");
+            password2_field.setText("");
+        }
     }//GEN-LAST:event_jButton2MouseClicked
 
     private void jButton3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton3MouseClicked
@@ -341,10 +346,8 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JTable jTable1;
     private javax.swing.JPasswordField password2_field;
     private javax.swing.JPasswordField password_field;
     private javax.swing.JTable user_table;
