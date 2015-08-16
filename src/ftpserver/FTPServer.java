@@ -43,7 +43,7 @@ public class FTPServer {
         factory.setPort(20);// set the port of the listener (choose your desired port, not 1234)
         serverFactory.addListener("default", factory.createListener());
         PropertiesUserManagerFactory userManagerFactory = new PropertiesUserManagerFactory();
-        //userManagerFactory.setFile(new File("C://"));//choose any. We're telling the FTP-server where to read it's user list
+        userManagerFactory.setFile(new File("./test/myusers.properties"));//choose any. We're telling the FTP-server where to read it's user list
         userManagerFactory.setPasswordEncryptor(new PasswordEncryptor() {//We store clear-text passwords in this example
 
             @Override
@@ -60,7 +60,7 @@ public class FTPServer {
         BaseUser user = new BaseUser();
         user.setName("test");
         user.setPassword("test");
-        user.setHomeDirectory("E:/");
+        user.setHomeDirectory("‪C:\\FTP\\DATA");
         List<Authority> authorities = new ArrayList<Authority>();
         authorities.add(new WritePermission());
         user.setAuthorities(authorities);
