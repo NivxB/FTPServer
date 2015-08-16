@@ -7,10 +7,30 @@ package ftpserver;
 
 import java.awt.Checkbox;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import org.apache.ftpserver.FtpServer;
+import org.apache.ftpserver.FtpServerFactory;
+import org.apache.ftpserver.ftplet.Authority;
+import org.apache.ftpserver.ftplet.FtpException;
+import org.apache.ftpserver.ftplet.FtpReply;
+import org.apache.ftpserver.ftplet.FtpRequest;
+import org.apache.ftpserver.ftplet.FtpSession;
+import org.apache.ftpserver.ftplet.Ftplet;
+import org.apache.ftpserver.ftplet.FtpletContext;
+import org.apache.ftpserver.ftplet.FtpletResult;
+import org.apache.ftpserver.ftplet.UserManager;
+import org.apache.ftpserver.listener.ListenerFactory;
+import org.apache.ftpserver.usermanager.PasswordEncryptor;
+import org.apache.ftpserver.usermanager.PropertiesUserManagerFactory;
+import org.apache.ftpserver.usermanager.impl.BaseUser;
+import org.apache.ftpserver.usermanager.impl.WritePermission;
 
 /**
  *
@@ -24,7 +44,8 @@ public class Main extends javax.swing.JFrame {
     public Main() {
         initComponents();
         setLocationRelativeTo(null);
-        home_path = "C:\\";
+        
+        home_path = "./test";
         users = new ArrayList();
         startTable(home_path);
     }
@@ -255,7 +276,19 @@ public class Main extends javax.swing.JFrame {
     private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseClicked
         // Se crea el nuevo usuario        
         if ((new String(password_field.getPassword())).equals(new String(password2_field.getPassword()))) {
-            users.add(new User(fullname_field.getText(), username_field.getText(), new String(password_field.getPassword()), description_field.getText()));
+            User new_user = new User(fullname_field.getText(), username_field.getText(), new String(password_field.getPassword()), description_field.getText());
+            users.add(new_user);
+            
+            BaseUser user = new BaseUser();
+            user.setName(new_user.getUsername());
+            user.setPassword(new_user.getPassword());
+            user.setHomeDirectory(home_path + "/" + new_user.getUsername());
+            UserManager um = userManagerFactory.createUserManager();
+            try {
+                um.save(user);
+            } catch (FtpException e1) {
+            }
+            
             JOptionPane.showMessageDialog(this, "El usuario fue ingresado correctamente.", "Nuevo usuario", JOptionPane.INFORMATION_MESSAGE);
             CrearUsuario.setVisible(false);
             fullname_field.setText("");
@@ -263,14 +296,12 @@ public class Main extends javax.swing.JFrame {
             description_field.setText("");
             password_field.setText("");
             password2_field.setText("");
-
-            DefaultTableModel model = (DefaultTableModel)user_table.getModel();
-            while(model.getRowCount() > 0) 
+            
+            DefaultTableModel model = (DefaultTableModel) user_table.getModel();
+            while (model.getRowCount() > 0) 
                 model.removeRow(0);
 
             user_table.setModel(model);
-            
-            
         } else {
             JOptionPane.showMessageDialog(this, "Las contraseñas no coinciden.", "Error", JOptionPane.ERROR_MESSAGE);
             password_field.setText("");
@@ -286,11 +317,11 @@ public class Main extends javax.swing.JFrame {
         description_field.setText("");
         password_field.setText("");
         password2_field.setText("");
-        
-        DefaultTableModel model = (DefaultTableModel)user_table.getModel();
-        while(model.getRowCount() > 0) 
+
+        DefaultTableModel model = (DefaultTableModel) user_table.getModel();
+        while (model.getRowCount() > 0) 
             model.removeRow(0);
-        
+
         user_table.setModel(model);
     }//GEN-LAST:event_jButton3MouseClicked
 
@@ -328,6 +359,105 @@ public class Main extends javax.swing.JFrame {
                 new Main().setVisible(true);
             }
         });
+        
+        serverFactory = new FtpServerFactory();
+        factory = new ListenerFactory();
+        factory.setPort(20);// set the port of the listener (choose your desired port, not 1234)
+        userManagerFactory = new PropertiesUserManagerFactory();
+        userManagerFactory.setFile(new File("./test/myusers.properties"));
+        serverFactory.addListener("default", factory.createListener());
+        serverFactory.setUserManager(userManagerFactory.createUserManager());
+        userManagerFactory.setPasswordEncryptor(new PasswordEncryptor() {//We store clear-text passwords in this example
+
+            @Override
+            public String encrypt(String password) {
+                return password;
+            }
+
+            @Override
+            public boolean matches(String passwordToCheck, String storedPassword) {
+                return passwordToCheck.equals(storedPassword);
+            }
+        });
+        //Let's add a user, since our myusers.properties files is empty on our first test run
+        BaseUser user = new BaseUser();
+        user.setName("test");
+        user.setPassword("test");
+        user.setHomeDirectory("./test");
+        
+        List<Authority> authorities = new ArrayList<Authority>();
+        authorities.add(new WritePermission());
+        user.setAuthorities(authorities);
+        UserManager um = serverFactory.getUserManager();
+        try {
+            um.save(user);//Save the user to the user list on the filesystem
+        } catch (FtpException e1) {
+            //Deal with exception as you need
+        }
+        serverFactory.setUserManager(um);
+        Map<String, Ftplet> m = new HashMap<String, Ftplet>();
+        m.put("miaFtplet", new Ftplet() {
+
+            @Override
+            public void init(FtpletContext ftpletContext) throws FtpException {
+                // System.out.println("init");
+                //   System.out.println("Thread #" + Thread.currentThread().getId());
+            }
+
+            @Override
+            public void destroy() {
+                System.out.println("destroy");
+                //System.out.println("Thread #" + Thread.currentThread().getId());
+            }
+
+            @Override
+            public FtpletResult beforeCommand(FtpSession session, FtpRequest request) throws FtpException, IOException {
+            //System.out.println("beforeCommand " + session.getUserArgument() + " : " + session.toString() + " | " + request.getArgument() + " : " + request.getCommand() + " : " + request.getRequestLine());
+                //System.out.println("Thread #" + Thread.currentThread().getId());
+
+                //do something
+                return FtpletResult.DEFAULT;//...or return accordingly
+            }
+
+            @Override
+            public FtpletResult afterCommand(FtpSession session, FtpRequest request, FtpReply reply) throws FtpException, IOException {
+           // System.out.println("afterCommand " + session.getUserArgument() + " : " + session.toString() + " | " + request.getArgument() + " : " + request.getCommand() + " : " + request.getRequestLine() + " | " + reply.getMessage() + " : " + reply.toString());
+                //System.out.println("Thread #" + Thread.currentThread().getId());
+
+                //do something
+                return FtpletResult.DEFAULT;//...or return accordingly
+            }
+
+            @Override
+            public FtpletResult onConnect(FtpSession session) throws FtpException, IOException {
+                System.out.println("onConnect " + session.getUserArgument() + " : " + session.toString());
+                //System.out.println("Thread #" + Thread.currentThread().getId());
+
+                //do something
+                return FtpletResult.DEFAULT;//...or return accordingly
+            }
+
+            @Override
+            public FtpletResult onDisconnect(FtpSession session) throws FtpException, IOException {
+            //System.out.println("onDisconnect " + session.getUserArgument() + " : " + session.toString());
+                //System.out.println("Thread #" + Thread.currentThread().getId());
+
+                //do something
+                return FtpletResult.DEFAULT;//...or return accordingly
+            }
+        });
+        serverFactory.setFtplets(m);
+        //Map<String, Ftplet> mappa = serverFactory.getFtplets();
+        //System.out.println(mappa.size());
+        //System.out.println("Thread #" + Thread.currentThread().getId());
+        //System.out.println(mappa.toString());
+        FtpServer server = serverFactory.createServer();
+        try {
+
+            server.start();//Your FTP server starts listening for incoming FTP-connections, using the configuration options previously set
+        } catch (FtpException ex) {
+            //Deal with exception as you need
+        }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -353,14 +483,17 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JTable user_table;
     private javax.swing.JTextField username_field;
     // End of variables declaration//GEN-END:variables
-    private final String home_path; 
+    private final String home_path;
     private ArrayList<User> users;
-    
+    private static FtpServerFactory serverFactory;
+    private static ListenerFactory factory;
+    private static PropertiesUserManagerFactory userManagerFactory;
+
     private void startTable(String path) {
         String[] headers = {"Nombre", "Tamaño", "Tipo"};
         DefaultTableModel model = new DefaultTableModel(headers, 0);
         File[] files_on_folder = new File(path).listFiles();
-        
+
         File file;
         for (int index = 0; index < files_on_folder.length; index++) {
             file = files_on_folder[index];
@@ -372,20 +505,21 @@ public class Main extends javax.swing.JFrame {
                 model.addRow(data);
             }
         }
-        
+
         fileTable.setModel(model);
     }
-    
+
     private void showUsers() {
-        String[] headers = {"Nombre de usuario", "Lectura", "Escritura"}; 
-        DefaultTableModel model = (DefaultTableModel)user_table.getModel();
+        String[] headers = {"Nombre de usuario", "Lectura", "Escritura"};
+        DefaultTableModel model = (DefaultTableModel) user_table.getModel();
         model.setColumnIdentifiers(headers);
-        
-        for (int index = 0; index < users.size(); index++) 
+
+        for (int index = 0; index < users.size(); index++) {
             model.addRow(new Object[]{users.get(index).getUsername(), false, false});
-        
+        }
+
         user_table.setModel(model);
-        
+
     }
-    
+
 }
