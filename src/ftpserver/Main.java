@@ -15,6 +15,7 @@ import java.util.Map;
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import org.apache.ftpserver.ConnectionConfigFactory;
 import org.apache.ftpserver.FtpServer;
 import org.apache.ftpserver.FtpServerFactory;
 import org.apache.ftpserver.ftplet.Authority;
@@ -42,12 +43,10 @@ public class Main extends javax.swing.JFrame {
      * Creates new form Main
      */
     public Main() {
-        
+        users = new ArrayList();
         initComponents();
         setLocationRelativeTo(null);
-        
-        home_path = "C:/FTP/DATA";
-        users = new ArrayList();
+
         startTable(home_path);
     }
 
@@ -112,20 +111,6 @@ public class Main extends javax.swing.JFrame {
         });
         jScrollPane3.setViewportView(user_table);
 
-        jButton2.setText("Crear");
-        jButton2.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton2MouseClicked(evt);
-            }
-        });
-
-        jButton3.setText("Cancelar");
-        jButton3.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton3MouseClicked(evt);
-            }
-        });
-
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -162,17 +147,11 @@ public class Main extends javax.swing.JFrame {
                                             .addComponent(password2_field, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE))))))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(102, 102, 102)
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(76, 76, 76)
-                .addComponent(jButton3)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(43, 43, 43)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(username_field, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel1))
@@ -198,25 +177,49 @@ public class Main extends javax.swing.JFrame {
                 .addComponent(jLabel6)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton2)
-                    .addComponent(jButton3))
-                .addContainerGap(22, Short.MAX_VALUE))
+                .addGap(41, 41, 41))
         );
+
+        jButton2.setText("Crear");
+        jButton2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton2MouseClicked(evt);
+            }
+        });
+
+        jButton3.setText("Cancelar");
+        jButton3.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton3MouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout CrearUsuarioLayout = new javax.swing.GroupLayout(CrearUsuario.getContentPane());
         CrearUsuario.getContentPane().setLayout(CrearUsuarioLayout);
         CrearUsuarioLayout.setHorizontalGroup(
             CrearUsuarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, CrearUsuarioLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(CrearUsuarioLayout.createSequentialGroup()
+                .addGroup(CrearUsuarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, CrearUsuarioLayout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(CrearUsuarioLayout.createSequentialGroup()
+                        .addGap(87, 87, 87)
+                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(91, 91, 91)
+                        .addComponent(jButton3)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         CrearUsuarioLayout.setVerticalGroup(
             CrearUsuarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(CrearUsuarioLayout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 189, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(CrearUsuarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton2)
+                    .addComponent(jButton3))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -276,54 +279,57 @@ public class Main extends javax.swing.JFrame {
         if ((new String(password_field.getPassword())).equals(new String(password2_field.getPassword()))) {
             User new_user = new User(fullname_field.getText(), username_field.getText(), new String(password_field.getPassword()), description_field.getText());
             for (int i = 0; i < user_table.getRowCount(); i++) {
-                if((boolean)this.user_table.getValueAt(i, 1)){
-                    new_user.addReadPermission(user_table.getValueAt(i,0).toString());
+                if ((boolean) this.user_table.getValueAt(i, 1)) {
+                    new_user.addReadPermission(user_table.getValueAt(i, 0).toString());
                     System.out.println("Select el de read");
-                    System.out.println(user_table.getValueAt(i,0).toString());
+                    System.out.println(user_table.getValueAt(i, 0).toString());
                 }
-                if((boolean)this.user_table.getValueAt(i, 2)){
-                    new_user.addWritePermission(user_table.getValueAt(i,0).toString());
+                if ((boolean) this.user_table.getValueAt(i, 2)) {
+                    new_user.addWritePermission(user_table.getValueAt(i, 0).toString());
                     System.out.println("Select el de write");
-                    System.out.println(user_table.getValueAt(i,0));
+                    System.out.println(user_table.getValueAt(i, 0));
                 }
-                
+
             }
-            
+
             users.add(new_user);
-            
+
             BaseUser user = new BaseUser();
             user.setName(new_user.getUsername());
             user.setPassword(new_user.getPassword());
-            File Dir = new File(home_path+'/'+new_user.getUsername());
-            if(!Dir.exists()){
-            Dir.mkdir();
-                JOptionPane.showMessageDialog(this, "Su Directorio Fue Creado");
-            }else{
-                JOptionPane.showMessageDialog(this, "Este Directorio ya Existe");
+            File Dir = new File(home_path + '/' + new_user.getUsername());
+            if (!Dir.exists()) {
+                Dir.mkdir();
+                JOptionPane.showMessageDialog(this.CrearUsuario, "Su Directorio Fue Creado");
+            } else {
+                JOptionPane.showMessageDialog(this.CrearUsuario, "Este Directorio ya Existe");
             }
             List<Authority> authorities = new ArrayList<Authority>();
             authorities.add(new WritePermission());
             user.setAuthorities(authorities);
             user.setHomeDirectory(home_path + "/" + new_user.getUsername());
-            UserManager um = userManagerFactory.createUserManager();
+            UserManager um = serverFactory.getUserManager();
             try {
                 um.save(user);
             } catch (FtpException e1) {
             }
-            
-            JOptionPane.showMessageDialog(this, "El usuario fue ingresado correctamente.", "Nuevo usuario", JOptionPane.INFORMATION_MESSAGE);
+
+            serverFactory.setUserManager(um);
+            JOptionPane.showMessageDialog(this.CrearUsuario, "El usuario fue ingresado correctamente.", "Nuevo usuario", JOptionPane.INFORMATION_MESSAGE);
             CrearUsuario.setVisible(false);
             fullname_field.setText("");
             username_field.setText("");
             description_field.setText("");
             password_field.setText("");
             password2_field.setText("");
-            
+
             DefaultTableModel model = (DefaultTableModel) user_table.getModel();
-            while (model.getRowCount() > 0) 
+            while (model.getRowCount() > 0) {
                 model.removeRow(0);
+            }
 
             user_table.setModel(model);
+            startTable(home_path);
         } else {
             JOptionPane.showMessageDialog(this, "Las contraseñas no coinciden.", "Error", JOptionPane.ERROR_MESSAGE);
             password_field.setText("");
@@ -341,8 +347,9 @@ public class Main extends javax.swing.JFrame {
         password2_field.setText("");
 
         DefaultTableModel model = (DefaultTableModel) user_table.getModel();
-        while (model.getRowCount() > 0) 
+        while (model.getRowCount() > 0) {
             model.removeRow(0);
+        }
 
         user_table.setModel(model);
     }//GEN-LAST:event_jButton3MouseClicked
@@ -350,7 +357,7 @@ public class Main extends javax.swing.JFrame {
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
+    public static void main(String args[]) throws IOException, FtpException {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -381,12 +388,20 @@ public class Main extends javax.swing.JFrame {
                 new Main().setVisible(true);
             }
         });
-        
+
         serverFactory = new FtpServerFactory();
         factory = new ListenerFactory();
         factory.setPort(20);// set the port of the listener (choose your desired port, not 1234)
         userManagerFactory = new PropertiesUserManagerFactory();
-        userManagerFactory.setFile(new File("./test/myusers.properties"));
+        ConnectionConfigFactory connectionConfigFactory = new ConnectionConfigFactory();
+        connectionConfigFactory.setAnonymousLoginEnabled(true);
+        serverFactory.setConnectionConfig(connectionConfigFactory.createConnectionConfig());
+
+        File UserConfig = new File("./myusers.properties");
+        if (!UserConfig.exists()) {
+            UserConfig.createNewFile();
+        }
+        userManagerFactory.setFile(UserConfig);
         serverFactory.addListener("default", factory.createListener());
         serverFactory.setUserManager(userManagerFactory.createUserManager());
         userManagerFactory.setPasswordEncryptor(new PasswordEncryptor() {//We store clear-text passwords in this example
@@ -401,20 +416,28 @@ public class Main extends javax.swing.JFrame {
                 return passwordToCheck.equals(storedPassword);
             }
         });
-        //Let's add a user, since our myusers.properties files is empty on our first test run
-        BaseUser user = new BaseUser();
-        user.setName("test");
-        user.setPassword("test");
-        user.setHomeDirectory("./test");
-        
+        BaseUser anonUser = new BaseUser();
+        anonUser.setName("anonymous");
+        File AnonHome = new File(home_path + "/anon");
+        if (!AnonHome.exists()) {
+            AnonHome.mkdir();
+        }
+        anonUser.setHomeDirectory(home_path+"/anon");
         List<Authority> authorities = new ArrayList<Authority>();
         authorities.add(new WritePermission());
-        user.setAuthorities(authorities);
+        anonUser.setAuthorities(authorities);
         UserManager um = serverFactory.getUserManager();
-        try {
-            um.save(user);//Save the user to the user list on the filesystem
-        } catch (FtpException e1) {
-            //Deal with exception as you need
+
+        if (!um.doesExist("anonymous")) {
+            try {
+                um.save(anonUser);//Save the user to the user list on the filesystem
+            } catch (FtpException e1) {
+                //Deal with exception as you need
+            }
+        }
+        for (int i = 0; i < um.getAllUserNames().length; i++) {
+            //System.out.println(um.getAllUserNames()[i]);
+            users.add(new User(um.getAllUserNames()[i]));
         }
         serverFactory.setUserManager(um);
         Map<String, Ftplet> m = new HashMap<String, Ftplet>();
@@ -505,8 +528,8 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JTable user_table;
     private javax.swing.JTextField username_field;
     // End of variables declaration//GEN-END:variables
-    private final String home_path;
-    private ArrayList<User> users;
+    private final static String home_path = "C:/FTP/DATA";
+    private static ArrayList<User> users;
     private static FtpServerFactory serverFactory;
     private static ListenerFactory factory;
     private static PropertiesUserManagerFactory userManagerFactory;
@@ -525,6 +548,7 @@ public class Main extends javax.swing.JFrame {
             } else if (file.isDirectory()) {
                 Object[] data = {file.getName(), file.length() + " bytes", "Directorio"};
                 model.addRow(data);
+
             }
         }
 

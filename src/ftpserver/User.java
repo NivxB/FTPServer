@@ -16,6 +16,10 @@ public class User {
     private ArrayList<String> write_permissions;
     private ArrayList<String> read_permissions;
     
+    public User(String username){
+        this.username = username;
+    }
+    
     public User(String fullname, String username, String password, String description) {
         write_permissions = new ArrayList();
         read_permissions = new ArrayList();
