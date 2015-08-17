@@ -42,10 +42,11 @@ public class Main extends javax.swing.JFrame {
      * Creates new form Main
      */
     public Main() {
+        
         initComponents();
         setLocationRelativeTo(null);
         
-        home_path = "./test";
+        home_path = "C:/FTP/DATA";
         users = new ArrayList();
         startTable(home_path);
     }
@@ -241,15 +242,12 @@ public class Main extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(32, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 614, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(30, 30, 30))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jButton1)
-                        .addGap(61, 61, 61))))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jButton1)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 614, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(30, 30, 30))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -277,11 +275,35 @@ public class Main extends javax.swing.JFrame {
         // Se crea el nuevo usuario        
         if ((new String(password_field.getPassword())).equals(new String(password2_field.getPassword()))) {
             User new_user = new User(fullname_field.getText(), username_field.getText(), new String(password_field.getPassword()), description_field.getText());
+            for (int i = 0; i < user_table.getRowCount(); i++) {
+                if((boolean)this.user_table.getValueAt(i, 1)){
+                    new_user.addReadPermission(user_table.getValueAt(i,0).toString());
+                    System.out.println("Select el de read");
+                    System.out.println(user_table.getValueAt(i,0).toString());
+                }
+                if((boolean)this.user_table.getValueAt(i, 2)){
+                    new_user.addWritePermission(user_table.getValueAt(i,0).toString());
+                    System.out.println("Select el de write");
+                    System.out.println(user_table.getValueAt(i,0));
+                }
+                
+            }
+            
             users.add(new_user);
             
             BaseUser user = new BaseUser();
             user.setName(new_user.getUsername());
             user.setPassword(new_user.getPassword());
+            File Dir = new File(home_path+'/'+new_user.getUsername());
+            if(!Dir.exists()){
+            Dir.mkdir();
+                JOptionPane.showMessageDialog(this, "Su Directorio Fue Creado");
+            }else{
+                JOptionPane.showMessageDialog(this, "Este Directorio ya Existe");
+            }
+            List<Authority> authorities = new ArrayList<Authority>();
+            authorities.add(new WritePermission());
+            user.setAuthorities(authorities);
             user.setHomeDirectory(home_path + "/" + new_user.getUsername());
             UserManager um = userManagerFactory.createUserManager();
             try {
